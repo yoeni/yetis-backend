@@ -1,0 +1,57 @@
+version : "3"
+
+services:
+  cache:
+    container_name: "cache"
+    image: redis
+    restart: always
+    volumes:
+      - cache:/data
+    networks:
+      - learningapp-network
+  db:
+    container_name: "db"
+    image: library/postgres:15
+    restart: always
+    env_file:
+      - .dev.env
+    environment:
+     - POSTGRES_DB=${POSTGRES_DB}
+     - POSTGRES_USER=${POSTGRES_USER}
+     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    expose:
+     - "5432"
+    ports:
+     - "5432:5432"
+    volumes:
+     - db-data:/var/lib/postgresql/data
+     - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+     - learningapp-network
+  node:
+   container_name: "node"
+   image: nodejs
+   environment:
+     NODE_ENV: docker
+   build: 
+    context: .
+    dockerfile: Dockerfile
+   ports:
+     - "4000:4000"
+   restart: always
+   depends_on:
+     - cache
+     - db
+   volumes:
+      - ./:/app/src
+   networks:
+     - learningapp-network
+
+
+networks:
+  learningapp-network:
+
+volumes:
+  cache:
+      driver: local
+  db-data:
