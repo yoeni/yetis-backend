@@ -1,7 +1,7 @@
 import { serverAuth } from "./auth";
 import RedisSerivce from "./redis";
 import ServiceController from "./serviceController";
-import {  serviceEnums, userEnums, orderEnums } from "./serviceEnums";
+import {  serviceEnums, userEnums, orderEnums, courierEnums } from "./serviceEnums";
 export enum controlType{
     auth,
     cacheCheck
@@ -15,7 +15,7 @@ class RequestController {
         this.ServiceController  = new ServiceController(serviceType)
     }
 
-    public async useController(req,res, types: controlType[], service:  userEnums | orderEnums){
+    public async useController(req,res, types: controlType[], service:  userEnums | orderEnums | courierEnums){
         let result = { isResponse: false, code: 200, result: '' };
         for (let i = 0; i < types.length; i++) {
             const type = types[i];

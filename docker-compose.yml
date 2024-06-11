@@ -5,10 +5,14 @@ services:
     container_name: "cache"
     image: redis
     restart: always
+    expose:
+     - "6379"
+    ports:
+     - "6379:6379"
     volumes:
       - cache:/data
     networks:
-      - learningapp-network
+      - yetis-network
   db:
     container_name: "db"
     image: library/postgres:15
@@ -27,29 +31,11 @@ services:
      - db-data:/var/lib/postgresql/data
      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-     - learningapp-network
-  node:
-   container_name: "node"
-   image: nodejs
-   environment:
-     NODE_ENV: docker
-   build: 
-    context: .
-    dockerfile: Dockerfile
-   ports:
-     - "4000:4000"
-   restart: always
-   depends_on:
-     - cache
-     - db
-   volumes:
-      - ./:/app/src
-   networks:
-     - learningapp-network
+     - yetis-network
 
 
 networks:
-  learningapp-network:
+  yetis-network:
 
 volumes:
   cache:

@@ -9,6 +9,13 @@ class UserDAO {
     async getAllUsers() {
         return await this.DAO.runQuery(`SELECT * FROM "User"`)
     }
+    async getUsersByType(type: number) {
+        return await this.DAO.runQuery({
+            text: `SELECT id, name FROM "User" WHERE usertype = $1`,
+            values: [type]
+            }
+        )
+    }
     async getUserById(id: string) {
         return await this.DAO.runQuery({
             text: `SELECT * FROM "User" WHERE id = $1`,
@@ -32,7 +39,7 @@ class UserDAO {
     }
     async addUser(username: string, email: string, password: string, type: number, name:string, location: string) {
         return await this.DAO.runQuery({
-            text: `INSERT INTO "User" (username, email, password, last_login, userType, name, location) VALUES ($1,$2,crypt($3,getSalt()),current_timestamp, $4,$5, $6)`,
+            text: `INSERT INTO "User" (username, email, password, last_login, userType, name, location) VALUES ($1,$2,crypt($3,getSalt()),current_timestamp, $4,$5, $6) returning id`,
             values: [username,email,password, type, name, location]
             }
         );
@@ -94,9 +101,17 @@ class UserDAO {
 
         );
     }
+    async deleteUserByType(type: number) {
+        return await this.DAO.runQuery({
+            text:  `DELETE FROM "User" WHERE usertype = $1`,
+            values: [type]
+            }
+
+        );
+    }
     async loginWithUsername(username: string, password: string) {
         return await this.DAO.runQuery({
-            text: `SELECT * FROM "User" WHERE username=$1 AND password=crypt($2, getSalt()) `,
+            text: `SELECT * FROM "User" WHERE username=$1 AND password=crypt($2, getSalt()) AND usertype != 3`,
             values: [username, password]
         });
     }

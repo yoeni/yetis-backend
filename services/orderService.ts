@@ -1,14 +1,51 @@
+import axios from "axios";
 import OrderDAO from "../data_access/orderDAO";
-import { userEnums } from "../utils/serviceEnums";
+import { orderEnums } from "../utils/serviceEnums";
+import { v4 as uuidv4 } from 'uuid';
+import UserDAO from "../data_access/userDAO";
 
-class UserService {
+class OrderService {
     private OrderDAO: OrderDAO;
+    private UserDAO: UserDAO;
     constructor() {
         this.OrderDAO = new OrderDAO();
+        this.UserDAO = new UserDAO();
     }
 
-    async runServiceFunction(type: userEnums, req, res){
-        return await this[userEnums[type]](req,res)
+    async runServiceFunction(type: orderEnums, req, res){
+        return await this[orderEnums[type]](req,res)
+    }
+    private fetchRandomUsers = async () => {
+        const response = await axios.get('https://randomuser.me/api/?nat=tr&results=10');
+        return response.data.results;
+    };
+    private async createFakeOrders(req, res) {
+        const users = await this.fetchRandomUsers();
+
+        for (let user of users) {
+            const username = user.login.username;
+            const email = user.email; 
+            const password = uuidv4();  // Rastgele bir şifre oluştur
+            const name = `${user.name.first} ${user.name.last}`;
+            const location = `${user.location.coordinates.latitude}, ${user.location.coordinates.longitude}`;
+            const userType = 2;  
+
+            const registeredUser = await this.UserDAO.addUser(username, email, password, userType, name, location);
+            console.log(registeredUser);
+            if (registeredUser.isSuccessfullExecution) {
+                const content = 'Random order content';
+                
+                const orderedBy = (registeredUser.result as any)[0].id;
+    
+                const orderState = await this.OrderDAO.createOrder(content, orderedBy, location);
+                if (!orderState.isSuccessfullExecution) {
+                    return orderState;
+                }
+            } else {
+                return registeredUser;
+            }
+        }
+        return this.getAllOrders(req, res);
     }
     private async createOrder(req,res){
         const response = await this.OrderDAO.createOrder(req.body.content, req.body.orderedBy, req.body.location);
@@ -35,9 +72,9 @@ class UserService {
         return response;
     }
     private async deleteOrderById(req,res){
-        const response = await this.OrderDAO.deleteOrderById(req.params.id)
+        const response = await this.OrderDAO.deleteOrderById(req.body.id)
         return response;
     }
 }
 
-export default UserService;
+export default OrderService;

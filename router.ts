@@ -2,6 +2,8 @@ import UserRoutes from "./routes/userRoutes";
 import AuthRoutes from "./routes/authRoutes";
 import ErrorHandler from "./utils/general/errorHandler";
 import config from "./config";
+import orderRoutes from "./routes/orderRoutes";
+import courierRoutes from "./routes/courierRoutes";
 class Router {
     private apiRouter: any;
     constructor(apiRouter) {
@@ -13,6 +15,8 @@ class Router {
     initApiRouter() {
         AuthRoutes.setRoutes(this.apiRouter);
         UserRoutes.setRoutes(this.apiRouter);
+        orderRoutes.setRoutes(this.apiRouter);
+        courierRoutes.setRoutes(this.apiRouter);
         // Fix me. Will not catch errors thrown inside an async function
         ErrorHandler.initErrorhandlingMiddleWare(this.apiRouter)
     }

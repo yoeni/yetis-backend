@@ -11,6 +11,7 @@ class UserRoutes {
     public setRoutes(apiRouter: any){
         
         apiRouter.get('/users', (req, res) => this.Controller.useController(req, res, [controlType.auth],userEnums.getAllUsers));
+        apiRouter.get('/users/type/:type', (req, res) => this.Controller.useController(req, res, [controlType.auth],userEnums.getUsersByType));
         apiRouter.get('/user/id/:id', (req, res) => this.Controller.useController(req, res, [controlType.auth],userEnums.getUserById));
         apiRouter.get('/user/email/:email', (req, res) => this.Controller.useController(req, res, [controlType.auth],userEnums.getUserByEmail));
         apiRouter.get('/user/username/:username', (req, res) => this.Controller.useController(req, res, [controlType.auth],userEnums.getUserByUsername));
@@ -26,8 +27,9 @@ class UserRoutes {
         apiRouter.put('/user/username', (req, res) => this.Controller.useController(req, res, [controlType.auth],userEnums.updatePasswordUserByUsername));
         
         apiRouter.delete('/user/id/:id', (req, res) => this.Controller.useController(req, res, [controlType.auth],userEnums.deleteUserById));
-        // apiRouter.delete('/user/email/:email', (req, res) => this.Controller.useController(req, res, [controlType.auth],userEnums.deleteUserByEmail));
-        // apiRouter.delete('/user/username/:username', (req, res) => this.Controller.useController(req, res, [controlType.auth],userEnums.deleteUserByUsername));
+        apiRouter.delete('/user/email/:email', (req, res) => this.Controller.useController(req, res, [controlType.auth],userEnums.deleteUserByEmail));
+        apiRouter.delete('/user/type/:type', (req, res) => this.Controller.useController(req, res, [controlType.auth],userEnums.deleteUserByType));
+        apiRouter.delete('/user/username/:username', (req, res) => this.Controller.useController(req, res, [controlType.auth],userEnums.deleteUserByUsername));
     }
 }
 

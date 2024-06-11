@@ -14,6 +14,10 @@ class UserService {
         const response = await this.UserDAO.getAllUsers();
         return response;
     }
+    private async getUsersByType(req,res) {
+        const response = await this.UserDAO.getUsersByType(req.params.type)
+        return response;
+    }
     private async getUserById(req,res) {
         const response = await this.UserDAO.getUserById(req.params.id)
         return response;
@@ -27,7 +31,7 @@ class UserService {
         return response;
     }
     private async addUser(req,res){
-        const response = await this.UserDAO.addUser(req.body.username,req.body.email,req.body.password, req.body.native, req.body.name, req.body.location);
+        const response = await this.UserDAO.addUser(req.body.username,req.body.email,req.body.password, req.body.userType, req.body.name, req.body.location);
         return response;
     }
     private async updateUserLocation(req, res) {
@@ -56,6 +60,10 @@ class UserService {
     }
     private async deleteUserByEmail(req,res){
         const response = await this.UserDAO.deleteUserByEmail(req.params.email)
+        return response;
+    }
+    private async deleteUserByType(req,res){
+        const response = await this.UserDAO.deleteUserByType(req.params.type)
         return response;
     }
     private async deleteUserByUsername(req,res){
